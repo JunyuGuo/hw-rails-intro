@@ -7,7 +7,16 @@ class MoviesController < ApplicationController
     end
   
     def index
-       list = params[:sort_by]
+      @all_ratings = Movie.get_all_ratings
+      list = params[:sort_by]
+      
+      f_ratings = params[:ratings]
+      puts(f_ratings)
+      if f_ratings != nil
+        @movies = Movie.with_ratings(f_ratings)
+        return
+      end
+      
       if list == nil 
         @movies = Movie.all()
       else
