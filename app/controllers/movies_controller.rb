@@ -11,11 +11,25 @@ class MoviesController < ApplicationController
       list = params[:sort_by]
       
       f_ratings = params[:ratings]
-      puts(f_ratings)
+      #puts(f_ratings)
       if f_ratings != nil
-        @movies = Movie.with_ratings(f_ratings)
-        return
+      #  @movies = Movie.with_ratings(f_ratings)
+      #  return
+        session[:f_ratings] = f_ratings
       end
+      
+      if list != nil
+        session[:list] = list
+      end
+
+      if list == nil and f_ratings == nil and (session[:f_ratings] != nil or session[:list] != nil)
+        f_ratings = session[:f_ratings]
+        list = session[:list]
+        flash.keep
+        redirect_to movies_path({sort_by: list, ratings: f_ratings})
+      end
+      list = session[:list]
+      f_ratings = session[:f_ratings]
       
       if list == nil 
         @movies = Movie.all()
@@ -26,6 +40,9 @@ class MoviesController < ApplicationController
         elsif list == 'release_date'
           @date = 'bg-warning'
         end 
+      end
+      if f_ratings != nil
+        @movies = @movies.select{ |movie| f_ratings.include? movie.rating}
       end
     end
   
